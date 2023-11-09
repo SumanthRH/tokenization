@@ -7,8 +7,7 @@ from transformers import AutoTokenizer
 from tokenizers import Tokenizer
 
 vocab_keep_items = 5000
-# mname = "microsoft/deberta-base"
-mname = "gpt2"
+mname = "microsoft/deberta-base"
 
 
 tokenizer = AutoTokenizer.from_pretrained(mname, use_fast=True)
@@ -33,4 +32,5 @@ else:
     raise ValueError(f"don't know how to handle {tokenizer_json['model']['type']}")
 tokenizer_json["model"]["vocab"] = new_vocab
 tokenizer._tokenizer = Tokenizer.from_str(json.dumps(tokenizer_json))
-tokenizer.save_pretrained("gpt2_local")
+save_name = mname.split("/")[-1] + "_tiny"
+tokenizer.save_pretrained(save_name)
