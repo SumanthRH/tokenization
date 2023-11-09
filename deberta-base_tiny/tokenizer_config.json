@@ -1,0 +1,66 @@
+{
+  "add_bos_token": false,
+  "add_prefix_space": false,
+  "bos_token": {
+    "__type": "AddedToken",
+    "content": "[CLS]",
+    "lstrip": false,
+    "normalized": true,
+    "rstrip": false,
+    "single_word": false
+  },
+  "clean_up_tokenization_spaces": true,
+  "cls_token": {
+    "__type": "AddedToken",
+    "content": "[CLS]",
+    "lstrip": false,
+    "normalized": true,
+    "rstrip": false,
+    "single_word": false
+  },
+  "do_lower_case": false,
+  "eos_token": {
+    "__type": "AddedToken",
+    "content": "[SEP]",
+    "lstrip": false,
+    "normalized": true,
+    "rstrip": false,
+    "single_word": false
+  },
+  "errors": "replace",
+  "mask_token": {
+    "__type": "AddedToken",
+    "content": "[MASK]",
+    "lstrip": true,
+    "normalized": true,
+    "rstrip": false,
+    "single_word": false
+  },
+  "model_max_length": 512,
+  "pad_token": {
+    "__type": "AddedToken",
+    "content": "[PAD]",
+    "lstrip": false,
+    "normalized": true,
+    "rstrip": false,
+    "single_word": false
+  },
+  "sep_token": {
+    "__type": "AddedToken",
+    "content": "[SEP]",
+    "lstrip": false,
+    "normalized": true,
+    "rstrip": false,
+    "single_word": false
+  },
+  "tokenizer_class": "DebertaTokenizer",
+  "unk_token": {
+    "__type": "AddedToken",
+    "content": "[UNK]",
+    "lstrip": false,
+    "normalized": true,
+    "rstrip": false,
+    "single_word": false
+  },
+  "vocab_type": "gpt2"
+}
