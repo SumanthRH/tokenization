@@ -1,0 +1,1 @@
+BPE is perhaps the most popular tokenization algorithm right now, used by GPT, OPT, BLOOM, Llama, etc. Byte-pair encoding/ digram coding comes from information theory, and was first proposed in 1994 (Web archive). BPE tokenization first performs a character-level tokenization of the given corpus.
