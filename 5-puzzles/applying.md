@@ -65,7 +65,7 @@ You can see that that the tokenizer gives 8 vs 5 tokens for the two cases (witho
 
 ## Tokenizer Puzzle 2: The Effect of Vocabulary Size
 
-Inference and Training speed/throughput are often reported in tokens/ sec. However, the number of tokens in a model's vocabulary can differ widely - GPT 2 has a 50k vocab size, Llama 2 has a 32k vocab size, and GPT4 has a whopping 100k vocab size. This means that comparisons based solely on token counts might not make sense. You might ask: How _exactly_ does this affect sequence length: Are there heuristics to predict sequence lengths based on vocab sizes or other data? Well, that's a very hard question. Firstly, a lot of current tokenizers are BPE-based, so let's say we're only looking at BPE tokenizers. Now, vocabulary sizes are _chosen_ while training tokenizers. But vocab size is not the only component here. One training corpus might include a lot of code, and thus the vocabulary would have a bunch of code-specific tokens, while another might include very little, and you might end up with only character-level tokens for code. With such variability, it's not easy to just look at vocabulary size and say that for this data, I will get x times more tokens with LLama 2 vs GPT4. Indeed, you can see the same from Thomas Wolf's tokenizer puzzle:
+Inference and Training speed/throughput are often reported in tokens/ sec. However, the number of tokens in a model's vocabulary can differ widely - GPT 2 has a 50k vocab size, Llama 2 has a 32k vocab size, and GPT4 has a whopping 100k vocab size. This means that comparisons based solely on token counts might not make sense. You might ask: How _exactly_ does this affect sequence length: Are there heuristics to predict sequence lengths based on vocab sizes or other data? Well, that's a very hard question. Firstly, a lot of current tokenizers are BPE-based, so let's say we're only looking at BPE tokenizers. Now, vocabulary sizes are _chosen_ while training tokenizers. But vocab size is not the only component here. One training corpus might include a lot of code, and thus the vocabulary would have a bunch of code-specific tokens, while another might include very little, and you might end up with only character-level tokens for code. With such variability, it's not easy to just look at vocabulary size and say that for this data, I will get x times more tokens with LLama 2 vs GPT4. Indeed, you can see the same from [Thomas Wolf's tokenizer puzzle](https://twitter.com/Thom_Wolf/status/1700812382392516936):
 
 > Sunday small guessing puzzle
 > Let's say I have 3 tokenizers:
@@ -77,7 +77,7 @@ Inference and Training speed/throughput are often reported in tokens/ sec. Howev
 > (let’s say 10 random parquet files from RefinedWeb from https://huggingface.co/datasets/tiiuae/falcon-refinedweb roughly 1B tokens). I tokenize them with the tokenizers.
 > What will be the relative fertilities of these 3 tokenizers? ie. how many more tokens with falcon and llama2 versus gpt4 for instance would you expect. And why does this matter?
 
-A general heuristic is that a bigger vocab will lead to fewer tokens. Having more tokens means that longer character sequences might get represented with the additional tokens present, and you can get a shorter overall sequence length using the additional token ids. With BPE, you can simply say that you're definitely making more merges, and thus overall sequence length reduces (Of course, this is some more nuance here - you need to have more tokens dedicated for the given domain/ corpus you're dealing with).
+A general heuristic is that a bigger vocab will lead to fewer tokens. Having more tokens means that longer character sequences might get represented with the additional tokens present, and you can get a shorter overall sequence length using the additional token ids. With BPE, you can simply say that you're definitely making more merges, and thus overall sequence length reduces (Of course, there is some more nuance here - you need to have more tokens dedicated for the given domain/ corpus you're dealing with).
 
 Here's the [answer](https://x.com/Thom_Wolf/status/1701206627859206450?s=20): 
 > Running on 1B tokens from the RefinedWeb dataset. 
@@ -126,3 +126,8 @@ The vocab sizes for GPT2, GPT4, Llama and Falcon are 50K, 100K, 32K, 64K respect
 
 
 ## Testing on code
+Let's now look at the number of tokens produced for a dataset of code. We'll look at the Stack dataset, and just just about 1.5GB of data (5 files from the python subset). If you wish to try this out locally, run 
+```
+python get_stack_subset.py
+``` 
+This will download a subset of the Stack dataset and then tokenize the data using GPT2, GPT4, LLama and Falcon tokenizers. The results are below:
