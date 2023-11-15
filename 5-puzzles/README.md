@@ -1,8 +1,5 @@
 # Applying what we've learned
-
-## INput Preprocessing
-This is different for different tasks: you'd want to add special tokens for intrsuction tuning, not for causal language modelling, where you typically chunk your data. 
-
+Let's apply what we've learned through two simple puzzles!
 
 ## Tokenizer Puzzle 1: White spaces matter
 Here's a simple puzzle to test your knowledge of tokenization. Consider the case where you have a sequence of English words all stuck together i.e whitespace between them has been removed. Here's a sample:
@@ -131,3 +128,16 @@ Let's now look at the number of tokens produced for a dataset of code. We'll loo
 python get_stack_subset.py
 ``` 
 This will download a subset of the Stack dataset and then tokenize the data using GPT2, GPT4, LLama and Falcon tokenizers. The results are below:
+
+```
+Number of GPT2 tokens: 2,262,766,749
+Number of GPT4 tokens: 1,193,965,250
+Number of Llama tokens: 1,629,580,815
+Number of Falcon tokens: 1,496,059,289
+```
+
+Aha! We see clear differences across tokenizers now. GPT2 gives a whopping 2x the number of tokens as GPT4's tokenizer. To understand this better, let's look back at vocab sizes again:
+
+GPT4 (100K) > Falcon (65K) > GPT2 (50K) > Llama (32K)
+
+GPT2 has a _larger_ vocabulary size than LLama, but the number of tokens is in fact _1.3x more_. Why? Well, because it's not general vocabulary size that matters, of course! It's the vocabulary dedicated for the relevant characters/tokens in your test corpus that matters! If you notice, Llama actually gives you more tokens on English text (the previous experiment) than GPT2, so a clear tradeoff is visible. BPE is after all, a compression algorithm, and the training corpus for the Llama tokenizer had a good representation of code-related data, and thus more tokens were dedicated to code to _effectively compress_ that data. A simple demonstration: The encoding for 4 spaces ("    " - pretty common in code) is 1 single token with Llama's tokenizer, but 4 separate tokens with GPT2. 
