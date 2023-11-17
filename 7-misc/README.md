@@ -1,4 +1,5 @@
 
+# Miscallaneous Topics
 ## The PostProcessor: Be careful with special tokens
 One aspect we didn't get into until now was the postprocessor: typically, certain special tokens are added at the beginning or end (or both) of your sequence. For example, if you encode "Hello there!" with BERT, you get:
 
@@ -29,14 +30,18 @@ For the task of causal language modelling, you're working with autoregressive mo
 
 Thus, you have different behaviours depending on the pre-training task and the specific model. That said, let's take a look at what you want to be doing during _fine-tuning_. I'll only cover two popular cases: causal language modelling and instruction-tuning.
 
-## Causal language modelling
+### Causal language modelling
 
 Here, for for each element/ piece of text in your dataset, you would want to add an EOS token at the very end of each element. Note that when you chunk your data, you do NOT want to be adding EOS tokens for every output chunk! 
 
 This is different for different tasks: you'd want to add special tokens for instruction tuning, not for causal language modelling, where you typically chunk your data. 
 
 
-## Instruction-tuning
+### Instruction-tuning
 
 
 ## What's so special about the EOS token anyway?
+
+
+## More on special tokens
+A special token used for multi-lingual translation: https://aclanthology.org/Q17-1024.pdf 
