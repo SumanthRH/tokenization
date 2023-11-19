@@ -53,5 +53,11 @@ English text -> Translation Model -> Hindi tokens -> Hindi text -> Exact match v
 
 The results for the languages with the lowest performance in Figure 28, i.e., Hindi (hin_Deva), Kannada (kan_Knda), Maithili (mai_Deva), Telugu (tel_Telu), and Magahi (mag_Deva), may be partially explained by the fact that the scripts in which these languages are written are not always adequately tokenized by our detectors.
 
+
+# Low Resource => More Costly
+One artifact of having an imbalanced mixture of different langauges in your training corpus (for the tokenizer) is that your costs for text completions in low-resource languages can shoot up - simply because the text sequences get encoded with more tokens (i.e there is lesser _compression_ since a _smaller_ part of the vocabulary is _allocated_ for that language). For example, one user found that API calls in Hindi are 8 times more expensive than those in English: https://www.reddit.com/r/OpenAI/comments/124v2oi/hindi_8_times_more_expensive_than_english_the/
+
+
+
 .. https://github.com/gordicaleksa/Open-NLLB
 
