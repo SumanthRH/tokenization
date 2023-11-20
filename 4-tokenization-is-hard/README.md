@@ -42,22 +42,31 @@ $P(En) = \dfrac{(1000)^{1/5}}{(100)^{1/5} + (1000)^{1/5}} = 61.31\%$
 
 $P(Kn) = \dfrac{(100)^{1/5}}{(100)^{1/5} + (1000)^{1/5}} = 38.69\%$
 
-​You can clearly the difference! Of course, when you've got a mixture with 200 languages with many of them low-resource, you are likely to still have some im-balance. The idea that over-sampling low-resource languages is certainly not new. But I find it interesting that even at the scale of 200 languages, all you need (or all we know of?) is temperature sampling. 
+​You can clearly the difference! Of course, when you've got a mixture with 200 languages with many of them low-resource, you will still have some im-balance. The idea of over-sampling low-resource languages to get a more balanced vocabulary is certainly not new. But I find it interesting that even at the scale of 200 languages, all you need (or all we know of?) is temperature sampling. 
  
 ### Tokenization affects evaluation
-Another interesting side effect of poor tokenization from the paper: lower performance on toxicity detection. In NLLB, they evaluated their machine-translation system by trying to do toxicity detection on the translations. I don't want to bloat this section up by too many details, so here's the gist. Toxicity detection is important for a translation system, because added toxicity terms, i.e., translated content containing toxic words that were not present in the original text is (1) bad/low-quality transation (2) degrades user trust in the system. So, the main purpose here is:
+Another interesting side effect of poor tokenization from the paper: lower performance on toxicity detection. In NLLB, they evaluated their machine-translation system by trying to do toxicity detection on the translations. I don't want to bloat this section up by too many details, so here's the gist. Toxicity detection is important for a translation system, because *added toxicity* terms, i.e., translated content containing toxic words that were *not* present in the original text is (1) bad/low-quality transation (2) degrades user trust in the system(Like translating "I'm bad at this" to "Ich bin scheiße darin"/ I'm shit at this ). So, the main purpose here is:
 > ...to improve translation safety through minimizing the probability of catastrophic mistranslations
 
-The pipeline for  a language like Hindi looks as follows :
+The pipeline for a language like Hindi looks as follows :
 English text -> Translation Model -> Hindi tokens -> Hindi text -> Exact match vs a list of known toxic words. 
 
-The results for the languages with the lowest performance in Figure 28, i.e., Hindi (hin_Deva), Kannada (kan_Knda), Maithili (mai_Deva), Telugu (tel_Telu), and Magahi (mag_Deva), may be partially explained by the fact that the scripts in which these languages are written are not always adequately tokenized by our detectors.
+The results for different languages is given below (the details don't matter for this discussion; just note that smaller numbers mean worse performance, and observe which languages perform worse).
 
+![Alt text](toxicity_detection_nllb.png)
+
+Here are the authors' comments on the languages with poor performance:
+
+> The results for the languages with the lowest performance in Figure 28, i.e., Hindi (hin_Deva), Kannada (kan_Knda), Maithili (mai_Deva), Telugu (tel_Telu), and Magahi (mag_Deva), may be partially explained by the fact that the scripts in which these languages are written are not always adequately tokenized by our detectors.
+
+While tokenization might not be the sole reason, it's important to note how "poor" tokenization can affect *everything*. Another question to think about is: What's special about these specific languages (and that too all Indic?) ? Well, many Indic languages have complex script rules in ways that different consonants and vowels fuse together to change gender, tense, mood, plurality, etc. Typically, tokenizer vocabularies are not large enough to adequately represent various meaningful units in these languages and fine-grained tokenization can lead to a loss of information.
 
 # Low Resource => More Costly
-One artifact of having an imbalanced mixture of different langauges in your training corpus (for the tokenizer) is that your costs for text completions in low-resource languages can shoot up - simply because the text sequences get encoded with more tokens (i.e there is lesser _compression_ since a _smaller_ part of the vocabulary is _allocated_ for that language). For example, one user found that API calls in Hindi are 8 times more expensive than those in English: https://www.reddit.com/r/OpenAI/comments/124v2oi/hindi_8_times_more_expensive_than_english_the/
+One artifact of having an imbalanced mixture of different languages in your training corpus (for the tokenizer) is that your costs for text completions in low-resource languages can shoot up - simply because the text sequences get encoded with more tokens (i.e there is lesser _compression_ since a _smaller_ part of the vocabulary is _allocated_ for that language). For example, one user found that API calls in Hindi are 8 times more expensive than those in English: https://www.reddit.com/r/OpenAI/comments/124v2oi/hindi_8_times_more_expensive_than_english_the/
 
 
 
 .. https://github.com/gordicaleksa/Open-NLLB
 
+
+https://arxiv.org/pdf/2204.08832.pdf 
