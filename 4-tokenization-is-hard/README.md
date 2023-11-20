@@ -1,3 +1,20 @@
+
+
+<!-- toc -->
+
+- [Number Tokenization](#number-tokenization)
+- [Metrics](#metrics)
+- [Tokenization for non-English languages](#tokenization-for-non-english-languages)
+- [Tokens for Multilingual models](#tokens-for-multilingual-models)
+  * [No Language Left Behind](#no-language-left-behind)
+    + [Why tokenization matters](#why-tokenization-matters)
+      - [How does temperature sampling help again?](#how-does-temperature-sampling-help-again)
+    + [Tokenization affects evaluation](#tokenization-affects-evaluation)
+- [Low Resource => More Costly](#low-resource--more-costly)
+- [Glitch Tokens](#glitch-tokens)
+
+<!-- tocstop -->
+
 # Number Tokenization
 
 What is an ideal way to tokenize numbers? Well, the main reference we have is the way we represent numbers. In the decimal number system, we assign unique symbols to numbers 0 to 9, and then all other numbers can be represented using these symbols (along with the "." for fractinal parts). So, one expectation you could have is that tokenization should also follow this uniformity (along with a special token for continuity of a number, like "##" for BERT). That is far from the case in practice! Let's take T5, for example. The number "410" gets segmented as one token, but the numbers "411" or "490" are segmented as two tokens, "4" and "11"/ "90". There are a bunch of weird patterns in how many tokens different numbers get. The reason is pretty simple if you think about what BPE does - your training corpus contaiins a bunch of different numbers, and a tokenizer like BPE, while training on this corpus, would try to find the best way to compress all of these numbers. Your training data is likely to contain round numbers more ("400-odd students", "100s of people missing") and so these are likely to get single tokens, and so on. This non-uniform way of 
@@ -64,9 +81,15 @@ While tokenization might not be the sole reason, it's important to note how "poo
 # Low Resource => More Costly
 One artifact of having an imbalanced mixture of different languages in your training corpus (for the tokenizer) is that your costs for text completions in low-resource languages can shoot up - simply because the text sequences get encoded with more tokens (i.e there is lesser _compression_ since a _smaller_ part of the vocabulary is _allocated_ for that language). For example, one user found that API calls in Hindi are 8 times more expensive than those in English: https://www.reddit.com/r/OpenAI/comments/124v2oi/hindi_8_times_more_expensive_than_english_the/
 
+# Glitch Tokens
+Another artifact you might have come across if you've been playing around with ChatGPT models: There are certain "glitch tokens"
 
+
+![Alt text](image.png)
+
+![Alt text](image-1.png)
 
 .. https://github.com/gordicaleksa/Open-NLLB
 
 
-https://arxiv.org/pdf/2204.08832.pdf 
+https://arxiv.org/pdf/2204.08832.pdf
