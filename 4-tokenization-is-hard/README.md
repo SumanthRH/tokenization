@@ -20,14 +20,16 @@
 What is an ideal way to tokenize numbers? Well, the main reference we have is the way we represent numbers. In the decimal number system, we assign unique symbols to numbers 0 to 9, and then all other numbers can be represented using these symbols (along with the "." for fractinal parts). So, one expectation you could have is that tokenization should also follow this uniformity (along with a special token for continuity of a number, like "##" for BERT). That is far from the case in practice! Let's take T5, for example. The number "410" gets segmented as one token, but the numbers "411" or "490" are segmented as two tokens, "4" and "11"/ "90". There are a bunch of weird patterns in how many tokens different numbers get. The reason is pretty simple if you think about what BPE does - your training corpus contaiins a bunch of different numbers, and a tokenizer like BPE, while training on this corpus, would try to find the best way to compress all of these numbers. Your training data is likely to contain round numbers more ("400-odd students", "100s of people missing") and so these are likely to get single tokens, and so on. This non-uniform way of 
 representing numbers might be nice for compression's sake, but it has some nasty downstream effects. The embedding for two numbers close to each other on the number line can be very different because of almost arbitrary splits for the two numbers (like in the above case for "410" and "411"). Recent models explicitly ensure some uniformity.  For example, with Llama, all numbers are tokenized as individual digits. With Falcon, all numbers from 0-999 are segmented as 1 token, although strangely enough 957 is the only exception that gets 2 tokens (why??). The larger numbers are tokenized using smaller 3-digit/2-digit/1-digit tokens. As far as I can tell, even GPT-4's tokenizer (available in [tiktoken](https://github.com/openai/tiktoken)) does the same: All numbers from 0-999 (inclusive) are present in the vocab and larger numbers get split based on these smaller numbers. 
 
-Further reading:
+**Further reading** 
+
 - LLaMA: Open and Efficient Foundation Language Models: https://arxiv.org/abs/2302.13971 
 
 
 # Metrics
 The differences in text pre-processing/ tokenization schemes can show up in your metrics. A prime example is the aptly named package _sacrebleu_ from [Post _et al_](https://aclanthology.org/W18-6319/) (2018). BLEU (BiLingual Evaluation Understudy) score is a popular metric in NLP for machine-translation. However, the score itself doesn't specify the exact format in which reference and machine-translated text are compared, and thus different users use their own tokenization and normalization schemes. There can be significant differences across such formats, with Post _et al._ showing that the changes can be as be as high as 1.8 (which could be the difference between your model being state-of-the-art or not).
 
-Further reading:
+**Further reading** 
+
 - A Call for Clarity in Reporting BLEU Scores: https://aclanthology.org/W18-6319/
 
 # Tokenization for non-English languages
@@ -78,18 +80,43 @@ Here are the authors' comments on the languages with poor performance:
 
 While tokenization might not be the sole reason, it's important to note how "poor" tokenization can affect *everything*. Another question to think about is: What's special about these specific languages (and that too all Indic?) ? Well, many Indic languages have complex script rules in ways that different consonants and vowels fuse together to change gender, tense, mood, plurality, etc. Typically, tokenizer vocabularies are not large enough to adequately represent various meaningful units in these languages and fine-grained tokenization can lead to a loss of information.
 
+**Further reading**
+- No Language Left Behind: Scaling Human-Centered Machine Translation: https://arxiv.org/abs/2207.04672 
+
+
+
 # Low Resource => More Costly
 One artifact of having an imbalanced mixture of different languages in your training corpus (for the tokenizer) is that your costs for text completions in low-resource languages can shoot up - simply because the text sequences get encoded with more tokens (i.e there is lesser _compression_ since a _smaller_ part of the vocabulary is _allocated_ for that language). For example, one user found that API calls in Hindi are 8 times more expensive than those in English: https://www.reddit.com/r/OpenAI/comments/124v2oi/hindi_8_times_more_expensive_than_english_the/
 
 # Glitch Tokens
-Another artifact you might have come across if you've been playing around with ChatGPT models: There are certain "glitch tokens"
+Another artifact you might have come across if you've been playing around with ChatGPT models: There are certain "glitch tokens" that make ChatGPT hallucinate in strange ways. Here are two cases that were seen first in [June 2023](https://twitter.com/goodside/status/1666598580319035392), but work even now in November 2023:
 
+![Alt text](image-2.png)
 
 ![Alt text](image.png)
 
 ![Alt text](image-1.png)
 
-.. https://github.com/gordicaleksa/Open-NLLB
+
+The first image is with GPT-3.5 and the second is with GPT-4. Further, the chat summary for the first image says the following:
+
+![Alt text](image-3.png)
+
+Firstly, one reason this happens is that there's a token in the GPT-4 vocabulary dedicated to " davidjl", which seems to be a part of a reddit username davidjl123. From [Simon Wilson's](https://simonwillison.net/2023/Jun/8/gpt-tokenizers/) blog:
+
+> It looks likely that this token refers to user davidjl123 on Reddit, a keen member of the /r/counting subreddit. He’s posted incremented numbers there well over 163,000 times.
+
+You can verify this yourself by loading GPT-4's tokenizer from `tiktoken`. The interesting thing is not just that there's a weird token, but that this token gets confused with other tokens!
+
+A detailed explanation from a user on HackerNews:
+
+> These glitch tokens are all near the centroid of the token embedding space. That means that the model cannot really differentiate between these tokens and the others equally near the center of the embedding space, and therefore when asked to ’repeat’ them, gets the wrong one.
+>
+> That happened because the tokens were on the internet many millions of times (the davidjl user has 163,000 posts on reddit simply counting increasing numbers), yet the tokens themselves were never hard to predict (and therefore while training, the gradients became nearly zero, and the embedding vectors decayed to zero, which some optimizers will do when normalizing weights).
 
 
-https://arxiv.org/pdf/2204.08832.pdf
+Can't make sense of this? Just close your left eye and squint really hard with your right eye! In all seriousness, I'm not sure about the second paragraph above, so let's just ignore it. The first seems roughly right. You can probably say that the model hasn't made meaninful updates to the embedding vector for this token during the training process, and given a sequence with this token, while trying to simply repeat the token, it get's confused and outputs a different token, likely with a similar embedding vector. If you have a better explanation, let me know!
+
+**Further reading**
+
+Understanding GPT tokenizers: https://simonwillison.net/2023/Jun/8/gpt-tokenizers/ 
