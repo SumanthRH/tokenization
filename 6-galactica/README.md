@@ -8,7 +8,7 @@ An important feature of Galactica is that it was trained on a large scientific c
 
  ![Alt text](corpus.png)
 
-In summary, the dataset consists of 106 billion tokens comprising of scientific literature (sources: arXiv, PubMed Abstracts, bioRxiv, ChemRxiv, etc), reference material (Wikipedia, StackExchange, Papers With Code, etc), knowledge bases (sources: ) 
+In summary, the dataset consists of 106 billion tokens comprising of scientific literature (sources: arXiv, PubMed Abstracts, bioRxiv, ChemRxiv, etc), code (sources: GitHub repositories linked in PapersWithCode), reference material (Wikipedia, StackExchange, Papers With Code, etc), knowledge bases (sources: PubChem Compound, UniProt, RefSeq Genome, etc), filtered CommonCrawl (from scientific and academic domains), prompt datasets (basically a bunch of curated NLP datasets like CommonSenseQA, BoolQ, OpenBookQA,etc in a prompt format).
 
 To appreciate this better, here are some of their [official examples](https://github.com/paperswithcode/galai) for:
 1. Generating Molecules:
@@ -21,33 +21,43 @@ galactica.generate("[START_I_SMILES]", max_length=200)
 galactica.generate("[START_AMINO]GHMQSITAGQKVISKHKNGRFYQCEVVRLTTETFYEVNFDDGSFSDNLYPEDIVSQDCLQFGPPAEGEVVQVRWTDGQVYGAKFVASHPIQMYQVEFEDGSQLVVKRDDVYTLDEELP[END_AMINO] ## Keywords", max_length=200)
 # '[START_AMINO]GHMQSITAGQKVISKHKNGRFYQCEVVRLTTETFYEVNFDDGSFSDNLYPEDIVSQDCLQFGPPAEGEVVQVRWTDGQVYGAKFVASHPIQMYQVEFEDGSQLVVKRDDVYTLDEELP[END_AMINO] ## Keywords\n\nCytoplasm, Methyltransferase, rRNA processing, S-adenosyl-L-methionine, Transferase\n\n## References\n\nQuestion: What are some articles for Ribosomal RNA small subunit methyltransferase H?\n\nAnswer: \n\n[START_REF] Comparative Genomics of 28 Salmonella enterica Isolates: Evidence for CRISPR-Mediated Adaptive Sublineage Evolution, Fricke[END_REF]\n\n</s>'
 ```
-The notation used in specifying molecule structure in text is the [Simplified molecular input line entry system (SMILES)](https://en.wikipedia.org/wiki/Simplified_molecular-input_line-entry_system) notation.    
+The notation used in specifying molecule structure in text is the [Simplified molecular input line entry system (SMILES)](https://en.wikipedia.org/wiki/Simplified_molecular-input_line-entry_system) notation. The different kinds of knowledge/ modalities used are:
+1. Text
+2. LaTeX
+3. Code
+4. SMILES
+5. Amino Acid Sequence 
+6. DNA Sequence
 
 
-All data is processed in a common markdown format to blend knowledge between sources. We also include task-specific datasets in pre-training to facilitate composition of this knowledge into new task contexts. For the interface, we use task-specific tokens to support different types of knowledge. We process citations with a special token, that allows a researcher to predict a citation given any input context.
+The first three are pretty common in most pretraining datasets. You can see that the focus with Galactica has been science and scientific knowledge, and, in their words, to "train a single neural network on a large scientific corpus to learn the different languages of science."
 
 
-"we train a single neural network on a large scientific corpus to learn the different languages of science."
 
-![Alt text](image.png)
+# Tokens and input format
+Tokenization design in Galactica is really at the heart of the paper. The key motivation is that you're dealing with these giant blocks of text with all different modalities mixed in, and there are different kinds of tokenization appropriate for each. For example, character-based tokenization is best suited for protein sequences, which are written as amino acid sequences. Different modalities are also wrapped in their own special tokens, which aids in learning and gives these different abilities for the model, which we'll get to later. Here are the full list of tokenization steps from the paper, as it's hard to summarize this better:
 
-
-Tokenization is an important part of dataset design given the different modalities present. For example, protein sequences are written in terms of amino acid residues, where character-based tokenization is appropriate. To achieve the goal of specialized tokenization, we utilize specialized tokens for different modalities:
-1. Citations: we wrap citations with special reference tokens [START_REF] and [END_REF].
-2. Step-by-Step Reasoning: we wrap step-by-step reasoning with a working memory token <work>,
+> 1. Citations: we wrap citations with special reference tokens [START_REF] and [END_REF].
+> 2. Step-by-Step Reasoning: we wrap step-by-step reasoning with a working memory token <work>,
 mimicking an internal working memory context.
-3. Mathematics: for mathematical content, with or without LaTeX, we split ASCII operations into individual characters. Parentheses are treated like digits. The rest of the operations allow for unsplit repetitions. Operation characters are !"#$%&’*+,-./:;<=>?\^_‘| and parentheses are ()[]{}.
-4. Numbers: we split digits into individual tokens. For example 737612.62 -> 7,3,7,6,1,2,.,6,2.
-5. SMILESformula:wewrapsequenceswith[START_SMILES]and[END_SMILES]andapplycharacter- based tokenization. Similarly we use [START_I_SMILES] and [END_I_SMILES] where isomeric SMILES is denoted. For example, C(C(=O)O)N → C,(,C,(,=,O,),O,),N.
-6. Amino acid sequences: we wrap sequences with [START_AMINO] and [END_AMINO] and apply character-based tokenization, treating each amino acid character as a single token. For example, MIRLGAPQTL -> M,I,R,L,G,A,P,Q,T,L.
-7. DNA sequences: we also apply a character-based tokenization, treating each nucleotide base as a token, where the start tokens are [START_DNA] and [END_DNA]. For example, CGGTACCCTC -> C, G, G, T, A, C, C, C, T, C.
+> 3. Mathematics: for mathematical content, with or without LaTeX, we split ASCII operations into individual characters. Parentheses are treated like digits. The rest of the operations allow for unsplit repetitions. Operation characters are !"#$%&’*+,-./:;<=>?\^_‘| and parentheses are ()[]{}.
+> 4. Numbers: we split digits into individual tokens. For example 737612.62 -> 7,3,7,6,1,2,.,6,2.
+> 5. SMILES formula: we wrap sequences with [START_SMILES] and [END_SMILES]and apply character-based tokenization. Similarly we use [START_I_SMILES] and [END_I_SMILES] where isomeric SMILES is denoted. For example, C(C(=O)O)N → C,(,C,(,=,O,),O,),N.
+> 6. Amino acid sequences: we wrap sequences with [START_AMINO] and [END_AMINO] and apply character-based tokenization, treating each amino acid character as a single token. For example, MIRLGAPQTL -> M,I,R,L,G,A,P,Q,T,L.
+> 7. DNA sequences: we also apply a character-based tokenization, treating each nucleotide base as a token, where the start tokens are [START_DNA] and [END_DNA]. For example, CGGTACCCTC -> C, G, G, T, A, C, C, C, T, C.
 
 
- ![Alt text](image-1.png)
+One example for the processed text with a protein sequence, from the paper:
+
+![Text](image.png)
+*Example for an annotated protein sequence with accompanying text*
 
 
+![Alt text](image-1.png)
+*Example for an annotated block of text from scientific literature with citations*
 
- Having custom tokens defining certain boundaries and demarcating different modes of data (citation, working memory, etc) also gives your model new abilities in generation. For example, for certain prompts, you might want to just look up a reference, in which case, you can use the start and end tokens to reliably get just the text you want (instead of ad-hoc prompt tuning to get GPT to say just the answer and nothing more; or waste tokens with few shot examples in every API call)
+
+ Having custom tokens defining certain boundaries and demarcating different modes of data (citation, working memory, etc) also gives your model new abilities in generation. For example, for certain prompts, you might want to just look up a reference, in which case, you can use the start and end tokens to reliably get just the text you want (instead of ad-hoc prompt engineering; or waste tokens with few shot examples in every API call)
 
  model.generate_reference("The paper introducing the formula for the $n$-th digit of $\\pi$ in base $16$")
 
