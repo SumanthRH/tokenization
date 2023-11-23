@@ -4,6 +4,8 @@ A simple BPE tokenizer implementation
 import json
 from typing import Any
 import regex as re # regex is cooler than re
+import warnings
+from transformers.models.gpt2.tokenization_gpt2 import bytes_to_unicode
 
 def get_pairs(word):
     """
@@ -25,8 +27,7 @@ class BPE:
         self.id_to_token = {}
         self.merges = []
         self.bpe_ranks = dict()
-        # Regex for pre-tokenization - breaking up a piece of text into words, splitting at whitespaces, contractions, etc. Borrowed from GPT-2
-        self.pattern_for_splitting = re.compile(r"""'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+""")
+        self.byte_encoder = bytes_to_unicode() # maps bytes to unicode strings
         self.load_vocab(vocab_file)
     
     def load_vocab(self, vocab_file: str):
@@ -40,17 +41,10 @@ class BPE:
             # i is the index of the merge in the merges list, also the rank. lower rank means merge happens earlier
             self.bpe_ranks[pair] = i 
         
-    def __call__(self, text: str):
-        # pre-tokenization
-        words = self.pattern_for_splitting.findall(text)
-        all_tokens = []
-        import pdb; pdb.set_trace()
-        for word in words:
-            word_tokens = self.segment_word(word)
-            all_tokens.extend(word_tokens)
-        return all_tokens
-    
-    def segment_word(self, word: str):
+    def __call__(self, word: str, dont_byte_encode: bool = False) -> Any:
+        if " " in word and not dont_byte_encode:
+            warnings.warn("Word contains whitespaces. Encoding to unicode strings...")
+            word = "".join([self.byte_encoder[b] for b in word.encode("utf-8")])
         pairs = get_pairs(word) # "obobc" -> set([("o", "b"), ("b", "o"), ("b", "c")])
         while True:
             # get pair with lowest rank and merge
@@ -84,4 +78,24 @@ class BPE:
                 pairs = get_pairs(word)
         word = " ".join(word)
         return word
+
+    def __repr__(self) -> str:
+        return f"BPE(vocab_size={len(self.token_to_id)})"
     
+    def add_token(self, token: str):
+        """
+        Adds a token to the vocabulary. Token is added to the end of the vocab.
+        """
+        if token in self.token_to_id:
+            raise ValueError(f"Token {token} already in vocabulary.")
+        self.token_to_id[token] = len(self.token_to_id)
+        self.id_to_token[len(self.id_to_token)] = token
+    
+
+if __name__ == "__main__":
+
+    bpe = BPE("./2-bpe/vocab.json")
+    from transformers import AutoTokenizer
+    gpt2 = AutoTokenizer.from_pretrained("gpt2", use_fast=False)
+    gpt2.encode(" worda")
+    import pdb; pdb.set_trace()

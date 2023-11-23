@@ -10,9 +10,9 @@ def get_initial_words(filename):
     segmented_word_to_freq = defaultdict(int) # {"w o r d </w>": 1, ...}
     with open(filename, 'r', encoding='utf-8') as f:
         for line in f:
-            words = line.strip().split()
+            words = line.strip().split() # words are split on whitespace; this is our pre-tokenization step
             for word in words:
-                # Separate each character with a dollar sign. "word" -> "w o r d </w>"
+                # Separate each character with spaces, to show tokens for clarity. "word" -> "w o r d </w>"
                 segmented_word = ' '.join(list(word)) + " " +  EOW_TOKEN
                 segmented_word_to_freq[segmented_word] += 1
     return segmented_word_to_freq
@@ -49,12 +49,12 @@ print("##################")
 num_merges = 10
 for i in range(num_merges):
     pairs = get_stats(word_to_freq)
-    best = max(pairs, key=pairs.get)
-    word_to_freq = merge_word_splits(best, word_to_freq)
-    new_token = ''.join(best)
+    best_pair = max(pairs, key=pairs.get)
+    word_to_freq = merge_word_splits(best_pair, word_to_freq)
+    new_token = ''.join(best_pair)
     vocab[new_token] = len(vocab)
     print(f"Iteration {i+1}")
-    print("Best pair: ", best)
+    print("Best pair: ", best_pair)
     print("New token: ", new_token)
     print("All words: ", list(word_to_freq.keys()))
     print("##################")
