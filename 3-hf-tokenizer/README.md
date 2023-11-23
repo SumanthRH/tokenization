@@ -22,7 +22,7 @@ Let's take a look at how a HF tokenizer stores the vocabulary along with the dif
 
 ![HF Slow tokenizer](hf_slow.png)
 
-The tokens are stored in a prefix tree/ [Trie](https://en.wikipedia.org/wiki/Trie)! A Trie implementation can vary based on what functionality you want, but these are the important methods in the [HF implementation](https://github.com/huggingface/transformers/blob/d1a00f9dd0b851245e4a54cbd70816a80e781ec2/src/transformers/tokenization_utils.py#L52):
+So are all the tokens are stored in a prefix tree/ [Trie](https://en.wikipedia.org/wiki/Trie)? No! This is only for `added_tokens`. For example, with GPT2, this trie will only store one token: `<|endoftext|>`. For some custom tokenizers like ByT5, the number of added tokens is in the hundreds, and so using a Trie makes a difference. ([Reference](https://github.com/huggingface/transformers/pull/13220)). The `added_tokens` Trie has two methods: 
 - `trie.add(word)` : Adds a word to the prefix tree.
 - `trie.split(text)`: Splits a text as a sequence of valid words (i.e present in the prefix tree) based on a longest-match strategy. 
 

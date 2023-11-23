@@ -12,7 +12,7 @@ Tokenization is an oft-neglected part of natural language processing. With the r
 6. [Galactica](/6-galactica/): Thinking about tokenizer design by diving into the Galactica paper.
 7. [Other Topics](/7-misc/): A look at special tokens and postprocessing, recent alternatives to subword tokenization, and going tiny.
 
-Recommended Prerequisites:
+## Recommended Prerequisites
 A basic understanding of language models and tokenization is a must: 
 - [A Hackers' Guide to Language Models](https://youtu.be/jkrNMKz9pWU?si=y06_GUgoaG8_ASyd) by Hacker-in-Chief, Prof. Jeremy Howard
 - [What makes LLM tokenizers different from each other?](https://youtu.be/rT6wVLEDC_w?si=v58zCYEIf0pheaEo) by Jay Alammar
