@@ -1,4 +1,4 @@
 Trying to learn about BPE
 I'm learning about byte-pair encoding
 My friend learnt that digram coding and byte pair encoding mean the same
-I like Jacques Cousteau
+I love Jacques Cousteau
