@@ -5,7 +5,16 @@ import json
 from typing import Any
 import regex as re # regex is cooler than re
 import warnings
+import os
 from transformers.models.gpt2.tokenization_gpt2 import bytes_to_unicode
+
+# a hacky custom warning formatter to avoid full path being shown
+def custom_formatwarning(msg, category, filename, lineno, line=None):
+    filename = os.path.basename(filename)
+    # Format the warning message
+    return f'{filename}:{lineno}: {category.__name__}: {msg}\n'
+
+warnings.formatwarning = custom_formatwarning
 
 def get_pairs(word):
     """
@@ -23,11 +32,12 @@ def get_pairs(word):
 
 class BPE:
     def __init__(self, vocab_file: str):
-        self.token_to_id = {}
-        self.id_to_token = {}
+        self.token_to_id = {} # vocab. Called `encoder` in `GPT2Tokenizer`
+        self.id_to_token = {} # called `decoder` in `GPT2Tokenizer`
         self.merges = []
         self.bpe_ranks = dict()
         self.byte_encoder = bytes_to_unicode() # maps bytes to unicode strings
+        self.byte_decoder = {v: k for k, v in self.byte_encoder.items()}
         self.load_vocab(vocab_file)
     
     def load_vocab(self, vocab_file: str):
@@ -47,7 +57,7 @@ class BPE:
             word = "".join([self.byte_encoder[b] for b in word.encode("utf-8")])
         pairs = get_pairs(word) # "obobc" -> set([("o", "b"), ("b", "o"), ("b", "c")])
         while True:
-            # get pair with lowest rank and merge
+            # get pair of chars/tokens with lowest rank and merge
             bigram = min(pairs, key=lambda pair: self.bpe_ranks.get(pair, float("inf")))
             if bigram not in self.bpe_ranks:
                 break
@@ -56,7 +66,7 @@ class BPE:
             i = 0
             while i < len(word):
                 try:
-                    j = word.index(first, i)
+                    j = word.index(first, i) # find index of occurence of `first` in word[i:]
                 except ValueError:
                     new_word.extend(word[i:])
                     break
@@ -83,9 +93,6 @@ class BPE:
         return f"BPE(vocab_size={len(self.token_to_id)})"
     
     def add_token(self, token: str):
-        """
-        Adds a token to the vocabulary. Token is added to the end of the vocab.
-        """
         if token in self.token_to_id:
             raise ValueError(f"Token {token} already in vocabulary.")
         self.token_to_id[token] = len(self.token_to_id)
@@ -94,7 +101,7 @@ class BPE:
 
 if __name__ == "__main__":
 
-    bpe = BPE("./2-bpe/vocab.json")
+    bpe = BPE("vocab.json")
     from transformers import AutoTokenizer
     gpt2 = AutoTokenizer.from_pretrained("gpt2", use_fast=False)
     gpt2.encode(" worda")

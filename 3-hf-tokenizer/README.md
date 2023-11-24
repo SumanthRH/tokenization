@@ -44,9 +44,9 @@ print(tokenizer("The slow tokenizer")) # Output: {'input_ids': [464, 3105, 11241
 ```
 You can see that the result is in fact a dictionary. `input_ids` are the token ids for the input sequence. If you decode the above sequence to get the actual tokens, you get `['The', ' slow', ' token', 'izer']`. Let's look at what happens inside the `__call__` method to get this result. The slow tokenizer class `PreTrainedTokenizer` derives the `__call__` method from the parent class `PreTrainedTokenizerBase`, in which [`__call__`](https://github.com/huggingface/transformers/blob/25b0f2033ba23e354ef2f665764248fcbb3f49ba/src/transformers/tokenization_utils_base.py#L2729) basically parses input arguments to make a call to the `encode_plus` function. HuggingFace tokenizers have two methods for encoding: `.encode()`, which gives you just a list of input_ids, and `encode_plus()`, which returns a dictionary with some additional information (`attention_mask`, `token_type_ids` to [mark sequence boundaries](https://huggingface.co/docs/transformers/glossary#token-type-ids), etc). The `encode_plus` implementation for the slow tokenizer (in reality, this is `_encode_plus`) is as follows(This is):
 1. Normalize and pre-tokenize input text. With GPT2, the pre-tokenization involves breaking up the text on whitespace, contractions, punctuations, etc.
-1. Tokenize input string/strings to get a list of tokens for each input string. This is handled by the `.tokenize()` method.
-2. Convert tokens to token ids using `.convert_tokens_to_ids()` method.
-3. Send in the token ids and other kwargs to `.prepare_for_model()`, which finally returns a dictionary with `attention_mask` and other keys if needed. 
+2. Tokenize input string/strings to get a list of tokens for each input string. This is handled by the `.tokenize()` method. (_Segmentation_)
+3. Convert tokens to token ids using `.convert_tokens_to_ids()` method. (_Numericalization_)
+4. Send in the token ids and other kwargs to `.prepare_for_model()`, which finally returns a dictionary with `attention_mask` and other keys if needed. 
 
 This is the simple explanation. There's one important detail though: When you have `added_tokens` or special tokens, there are no merge rules for these tokens! And you can't make up ad-hoc merge rules without messing up the tokenization of other strings. So, we need to handle this in the pre-tokenization step - Along with splitting on whitespace, punctuations, etc, we will also split at the boundaries of `added_tokens`. 
 
