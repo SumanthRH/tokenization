@@ -1,3 +1,5 @@
+<!-- toc -->
+
 # Diving into the HuggingFace tokenizer
 ## What makes up a HuggingFace tokenizer?
 Well, let's first think about state: what information does a tokenizer need to save? 
@@ -27,12 +29,12 @@ So are all the tokens stored in a [prefix tree/ Trie](https://en.wikipedia.org/w
 - `trie.add(word)` : Adds a word to the prefix tree.
 - `trie.split(text)`: Splits a text as a sequence of valid words (i.e present in the prefix tree) based on a longest-match strategy. 
 
-To look at the other data stored, we'd need to move away from the parent class and actually go to the model-specific tokenizer. Here, this is `GPT2Tokenizer`. Some of the attributes are:
+To look at the other attributes/data structures stored, we'd need to move away from the parent class and actually go to the model-specific tokenizer. Here, this is `GPT2Tokenizer`. Some of the attributes are:
 - `encoder` - Vocabulary, keeping token -> token_id mappings
 - `decoder` - Inverse of the `encoder`, keeping token_id -> token mappings
 - `bpe_ranks` - Mapping between merge rule `token_1 token_2` and priority/rank. Merges which happened earlier in training have a lower rank, and thus higher priority i.e these merges should happen earlier than later while tokenizing a string.
 
-There are some more details here. Let's quickly go over the summary for important methods, and then move to the detailed [walkthrough.ipynb](/3-hf-tokenizer/walkthrough.ipynb).
+There are some more details here, but left for later. Let's quickly go over the summary for important methods first.
 
 ## `__call__`
 Okay, so what happens when you do call `tokenizer(text)`? An example with `gpt2`:
@@ -48,8 +50,15 @@ You can see that the result is in fact a dictionary. `input_ids` are the token i
 
 This is the simple explanation. There's one important detail though: When you have `added_tokens` or special tokens, there are no merge rules for these tokens! And you can't make up ad-hoc merge rules without messing up the tokenization of other strings. So, we need to handle this in the pre-tokenization step - Along with splitting on whitespace, punctuations, etc, we will also split at the boundaries of `added_tokens`. 
 
+# A minimal implementation
+This folder contains two `.py` files:
+- `bpe.py`: Implements a simple `BPE` class that tokenizes a string according to GPT-2's byte-level BPE algorithm (a simple change to standard BPE). 
+- `minimal_hf_tok.py`: Implements `MySlowTokenizer`,  <100 line implementation for the basic features of HuggingFace's `GPT2Tokenizer` (the slow version). 
 
-
+# Step-by-step walkthrough
+Head over to [walkthrough.ipynb](/3-hf-tokenizer/walkthrough.ipynb) for details on:
+- Implementing the merging algorithm for `BPE`
+- Implementing the different methods for encoding, decoding, added tokens etc. in `MySlowTokenizer` to match `GPT2Tokenizer`.
 
 
 
