@@ -29,8 +29,9 @@ class MyTrie(Trie):
         return super().split(word)
     
     def __repr__(self) -> str:
-        # format data graph into a nice dict
+        # format data dict into a json
         return json.dumps(self.data, indent=4)
+
 
 class MySlowTokenizer:
     """
