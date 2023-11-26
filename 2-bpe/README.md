@@ -32,12 +32,15 @@ At test time, the algorithm is very similar to training, except you're doing loo
 4. Repeat until you can't merge anymore.
 
 
-## Implementation
+# Implementation
 A minimal implementation for training a BPE tokenizer is in `orig_bpe.py`. The code is almost the same as the one in the original paper, with minor edits for clarity and for loading our own text corpus. To run the training on your machine, `cd` into the current directory and run
 ```
 python orig_bpe.py
 ```
 Now, as mentioned, we'd ideally like to keep whitespace information, but that is a detail that can be distracting while doing a minimal implementation. The BPE tokenizer implementated in [chapter-3](/3-hf-tokenizer/) will work with all special characters, so we'll ignore this detail for now.
 
-## Step into the walkthrough
+# Step into the walkthrough
 Head over to [walkthrough.ipynb](walkthrough.ipynb) for a simple guide to training a BPE model. This is a notebook version of the code in `orig_bpe.py`, and should be easier to digest.
+
+# Next Chapter
+We'll take a close look at the Python implementation for a 🤗 tokenizer and implement a minimal version of GPT2's tokenizer ourselves!
