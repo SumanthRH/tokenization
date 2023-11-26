@@ -129,9 +129,13 @@ Now that's a lot of special tokens! The exact way in which you should preprocess
 
 > _Question_: How do you think you can make a simple change to the BPE algorithm in [chapter-2](../2-bpe/) so that integers always undergo character-level tokenization? Think about making a change in the step where we select the best pair of symbols.
 
+
 ## Tokenizer training
 The Tokenizer was trained on 2% of the training data, randomly selected. They trained a BPE tokenizer with a vocabulary of size 50K. Note that for all the other special modalities used, the authors have chosen a character-level tokenization (numbers, chemical structure, protein sequences, etc). The fundamental imbalance wrt English text vs non-English modalities (recall our discussion about low-resource languages from [chapter-4](../4-tokenization-is-hard/)) doesn't matter much in terms of the compression you get, because you're 
 not really compressing other modalities.
+
+## Takeways on tokenizer design
+Something to think about while designing your tokenizer. From Galactica,the important lesson, in my opinion, which has become the norm really, is that you can separate out different data modalities with their own special tokens to switch between different modes of generation. Note that training a tokenizer from scratch is not always needed. For example, if you want to have some custom function calling behaviour with Llama 2 (as far as I know, no such training was performed for the base model), then you don't have to train the tokenizer from scratch. Your function call will be represented in code-like syntax, which Llama has been trained on, and what you would need to do is add special tokens, like `[START_FUNC]` and `[END_FUNC]`, resize token embeddings for the model, and then finetune on some function calling data you have. 
 
 # Model Training and Results
 This section will deviate slightly from tokenization, just to provide some context for other aspects in Galactica. 

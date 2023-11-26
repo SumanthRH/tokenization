@@ -104,14 +104,14 @@ Firstly, one reason this happens is that there's a token in the GPT-4 vocabulary
 
 You can verify this yourself by loading GPT-4's tokenizer from `tiktoken`. The interesting thing is not just that there's a weird token, but that this token gets confused with other tokens!
 
-A detailed explanation from a user on HackerNews:
+A detailed explanation from a [user on HackerNews](https://news.ycombinator.com/item?id=36245187):
 
 > These glitch tokens are all near the centroid of the token embedding space. That means that the model cannot really differentiate between these tokens and the others equally near the center of the embedding space, and therefore when asked to ’repeat’ them, gets the wrong one.
 >
 > That happened because the tokens were on the internet many millions of times (the davidjl user has 163,000 posts on reddit simply counting increasing numbers), yet the tokens themselves were never hard to predict (and therefore while training, the gradients became nearly zero, and the embedding vectors decayed to zero, which some optimizers will do when normalizing weights).
 
 
-Can't make sense of this? Just close your left eye and squint really hard with your right eye! In all seriousness, I'm not sure about the second paragraph above, so let's just ignore it. The first seems roughly right. You can probably say that the model hasn't made meaninful updates to the embedding vector for this token during the training process, and given a sequence with this token, while trying to simply repeat the token, it get's confused and outputs a different token, likely with a similar embedding vector. If you have a better explanation, let me know!
+This makes perfect sense, in the same way my 90+ year old grandpa looks young if you close your left eye and squint really hard with your right eye. In all seriousness, I'm not sure about the second paragraph above, so let's just ignore it. The first seems roughly right. You can probably say that the model hasn't made meaninful updates to the embedding vector for this token during the training process, and given a sequence with this token, while trying to simply repeat the token, it gets confused and outputs a different token, likely with a similar embedding vector (is this the centroid, or just close to the initialization?). If you have a better explanation, let me know!
 
 **Further reading**
 
@@ -119,9 +119,9 @@ Understanding GPT tokenizers: https://simonwillison.net/2023/Jun/8/gpt-tokenizer
 
 # Tiny Tokenizers
 
-This tiny section on tiny tokenizers is from [Stas Bekman's engineering blog](https://github.com/stas00/ml-engineering). It is possibly the greatest resource on ML engineering and debugging, and, if GitHub had semantic search, all engineering doubts should probably go through this repo first. 
+This tiny section on tiny tokenizers is from [Stas Bekman's engineering blog](https://github.com/stas00/ml-engineering). It is possibly the greatest resource on ML engineering and debugging, and, if GitHub had semantic search, all ML engineering doubts should probably go through this repo first. 
 
-The motivation for this is that you'd want to shrink your neural network for faster debugging cycles. If you want to launch a training run on 2 8-A100 nodes for Falcon-40b, then the time to simply load the model and start training itself would take up 15-20+ mins. You don't want to finally realise that a part of your code doesn't work for the Falcon model after this much time. Thus, we want to test our model, if possible just locally on our laptop, for a _tiny_ version of the model. For example, you can shrink GPT2 (the 128M parameter version), which has 12 layers with 12 blocks each, and with an embedding dimension of 768, to a version with just 5 layers with 5 blocks, with an embedding dimension of 32. (this is what is used [internally](https://huggingface.co/hf-internal-testing/tiny-random-gpt2) for testing by huggingface). However, the dominant component in your model weights is now the embedding layer: with GPT2, for example, you have a vocabulary size of 50,000. To get a truly tiny model, you need to shrink this as well. For example, with the above tiny configuration (5 layers, 5 blocks, 32 hidden state dimension), you'll have a model weights file of size 6.4MB. If you shrink the vocabulary to 1000, then you get a 0.5MB file! This difference can become larger for bigger models with bigger vocabs. 
+The motivation for going tiny is that you'd want to shrink your neural network for faster debugging cycles. If you want to launch a training run on 2 8-A100 nodes for Falcon-40b, then the time to simply load the model and start training itself would take up 15-20+ mins. You don't want to finally realise that a part of your code doesn't work for the Falcon model after this much time. Thus, we want to test our model, if possible just locally on our laptop, for a _tiny_ version of the model. For example, you can shrink GPT2 (the 128M parameter version), which has 12 layers with 12 blocks each, and with an embedding dimension of 768, to a version with just 5 layers with 5 blocks, with an embedding dimension of 32. (this is what is used [internally](https://huggingface.co/hf-internal-testing/tiny-random-gpt2) for testing by huggingface). However, the dominant component in your model weights is now the embedding layer: with GPT2, for example, you have a vocabulary size of 50,000. To get a truly tiny model, you need to shrink this as well. For example, with the above tiny configuration (5 layers, 5 blocks, 32 hidden state dimension), you'll have a model weights file of size 6.4MB. If you shrink the vocabulary to 1000, then you get a 0.5MB file! This difference can become larger for bigger models with bigger vocabs. 
 
 Thus, we have to shrink vocabulary for really tiny models so that we can iterate faster. Well, if we have to shrink the vocabulary, we have to shrink the tokenizer first. I've added one such shrinking recipe from Stas Bekman in `tokenizer_shrink.py`, and have added a few comments for clarity. It's pretty simple: you keep only the first few tokens in your vocabulary, and then handle other model-specific data (such as merges) appropriately.
 
@@ -129,3 +129,6 @@ One more point is that the shrinking of the tokenizer is mainly for the vocabula
 
 **Further reading**
 [Faster debug and development with tiny models, tokenizers and datasets](https://github.com/stas00/ml-engineering/blob/33561a45d122e7fdb3f3bc42e21b0e4aa3815702/transformers/make-tiny-models.md), Stas Bekman's engineering blog.
+
+# Next Chapter
+We'll now dive into the Galactica paper to understand how you can design a tokenizer.
