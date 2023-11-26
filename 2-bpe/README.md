@@ -24,6 +24,14 @@ The steps for training a BPE model are as follows:
 
 This is it! The full algorithm is pretty simple.
 
+## Test time
+At test time, the algorithm is very similar to training, except you're doing lookups in the set of merge rules:
+1. Perform character-level tokenization for input text.
+2. Find all pairs of symbols/tokens in the current words.
+3. Start merging pairs by going in order of merge rules: merges learnt earlier in the training process have higher priority, and are performed earlier.
+4. Repeat until you can't merge anymore.
+
+
 ## Implementation
 A minimal implementation for training a BPE tokenizer is in `orig_bpe.py`. The code is almost the same as the one in the original paper, with minor edits for clarity and for loading our own text corpus. To run the training on your machine, `cd` into the current directory and run
 ```
