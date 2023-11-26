@@ -3,7 +3,7 @@
 # Diving into the HuggingFace tokenizer
 ## What makes up a HuggingFace tokenizer?
 Well, let's first think about state: what information does a tokenizer need to save? 
-Before we dive in, it's helpful to - you won't believe this - actually check out the saved tokenizers for different models. For example, here's the [GPT-2 Tokenizer](https://huggingface.co/SumanthRH/gpt2-tokenizer/tree/main). This is actually saved in the older format, so we can take a look at, for example, [Falcon's tokenizer](https://huggingface.co/SumanthRH/falcon-tokenizer/tree/main). Make sure to scroll through the large `tokenizer.json` files so to get an idea for what's in there. 
+Before we dive in, it's helpful to - you won't believe this - actually check out the saved tokenizers for different models. For example, here's the [GPT-2 Tokenizer](https://huggingface.co/SumanthRH/gpt2-tokenizer/tree/main). This is actually saved in the older format, so we can take a look at, for example, [Falcon's tokenizer](https://huggingface.co/SumanthRH/falcon-tokenizer/tree/main). Make sure to scroll through the large `tokenizer.json` files to get an idea for what's in there. 
 ### BPE Tokenizer
 Let's consider a BPE tokenizer. In HuggingFace, you can save a tokenizer by calling the `save_pretained` method. Typically, you will see the following files for a BPE tokenizer:
 - [DEPR] `added_tokens.json`: Part of the older format for saving HF tokenizers. A little hard to figure out what this is for, since we have an "added_tokens" entry in the tokenizer.json file itself. Further, this doesn't actually have all the [AddedTokens](https://huggingface.co/docs/tokenizers/api/added-tokens) of your tokenizer (this inc. special tokens for some tokenizers like DeBERTa, Llama). 
@@ -20,14 +20,15 @@ Let's consider a BPE tokenizer. In HuggingFace, you can save a tokenizer by call
 ### WordPiece tokenizer
 `raise NotImplementedError`
 
-# Data Structures and Methods
+## Data Structures and Methods
 Let's take a look at how a HF tokenizer stores the vocabulary, added tokens, etc along with the different functionality it provides (as always, these are tightly coupled). For simplicity, I am only going to look into the slow tokenizers, implemented in Python, as opposed to the fast tokenizers implemented in Rust, as I basically haven't learnt Rust yet (my apologies to the Cargo cult). Here's what the initialization looks like:
 
 ![HF Slow tokenizer](hf_slow.png)
 
 So are all the tokens stored in a [prefix tree/ Trie](https://en.wikipedia.org/wiki/Trie)? No! This is only for `added_tokens`. For example, with GPT2, this trie will only store one token by default: `<|endoftext|>`. For some custom tokenizers like ByT5, the number of added tokens is in the hundreds, and so using a Trie makes a difference. This becomes useful when you are customizing your tokenizer by adding new tokens with the `tokenizer.add_tokens` method. ([Reference](https://github.com/huggingface/transformers/pull/13220)). The `added_tokens` Trie has two methods: 
 - `trie.add(word)` : Adds a word to the prefix tree.
-- `trie.split(text)`: Splits a text as a sequence of valid words (i.e present in the prefix tree) based on a longest-match strategy. 
+- `trie.split(text)`: Splits a string into chunks, separated at the boundaries of tokens in the trie.
+Ex: `This is <|myspecialtoken|>` -> `["This is ", "<|myspecialtoken|>"]`
 
 To look at the other attributes/data structures stored, we'd need to move away from the parent class and actually go to the model-specific tokenizer. Here, this is `GPT2Tokenizer`. Some of the attributes are:
 - `encoder` - Vocabulary, keeping token -> token_id mappings
@@ -36,7 +37,7 @@ To look at the other attributes/data structures stored, we'd need to move away f
 
 There are some more details here, but left for later. Let's quickly go over the summary for important methods first.
 
-## `__call__`
+### `__call__`
 Okay, so what happens when you do call `tokenizer(text)`? An example with `gpt2`:
 ```
 tokenizer = AutoTokenizer.from_pretrained("gpt2", use_fast=False) # get the slow tokenizer
@@ -50,6 +51,12 @@ You can see that the result is in fact a dictionary. `input_ids` are the token i
 
 This is the simple explanation. There's one important detail though: When you have `added_tokens` or special tokens, there are no merge rules for these tokens! And you can't make up ad-hoc merge rules without messing up the tokenization of other strings. So, we need to handle this in the pre-tokenization step - Along with splitting on whitespace, punctuations, etc, we will also split at the boundaries of `added_tokens`. 
 
+### `decode`
+When you run `tok.decode(token_ids)`, there are three operations:
+1. Convert ids to tokens using the `id_to_token` mapping from `tok.bpe`. 
+2. Join all the tokens
+3. Replace unicode symbols with normal characters
+
 # A minimal implementation
 This folder contains two `.py` files:
 - `bpe.py`: Implements a simple `BPE` class that tokenizes a string according to GPT-2's byte-level BPE algorithm (a simple change to standard BPE). 
@@ -60,6 +67,6 @@ Head over to [walkthrough.ipynb](/3-hf-tokenizer/walkthrough.ipynb) for details 
 - Implementing the merging algorithm for `BPE`
 - Implementing the different methods for encoding, decoding, added tokens etc. in `MySlowTokenizer` to match `GPT2Tokenizer`.
 
-
-
+# Next Chapter
+We'll be going over the challenges with tokenizing different types of data - numbers, other languages, etc.
 
