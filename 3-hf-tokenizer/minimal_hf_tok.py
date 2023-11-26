@@ -91,7 +91,7 @@ class MySlowTokenizer:
         # Pre-tokenization: split text into words based on regex. "This isn't" -> ["This", " isn", "'t"]
         words = self.pre_tokenize(text)
         for word in words:
-            # Unicode string encoding. " isn'" -> bytes object -> "Ġisn'"
+            # Unicode string encoding. " isn" -> bytes object -> "Ġisn"
             word = "".join([self.byte_encoder[b] for b in word.encode("utf-8")]) 
             tokens = self.bpe(word, dont_byte_encode=True).split(" ") # we already encoded the chunk to unicode strings
             all_tokens.extend(tokens)

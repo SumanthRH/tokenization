@@ -32,4 +32,4 @@ python orig_bpe.py
 Now, as mentioned, we'd ideally like to keep whitespace information, but that is a detail that can be distracting while doing a minimal implementation. The BPE tokenizer implementated in [chapter-3](/3-hf-tokenizer/) will work with all special characters, so we'll ignore this detail for now.
 
 ## Step into the walkthrough
-Head over to [walkthrough.ipynb](walkthrough.ipynb) for a step-by-step guide to training a simple BPE model.
+Head over to [walkthrough.ipynb](walkthrough.ipynb) for a simple guide to training a BPE model. This is a notebook version of the code in `orig_bpe.py`, and should be easier to digest.
