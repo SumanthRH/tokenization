@@ -16,9 +16,10 @@ Tokenization is an oft-neglected part of natural language processing. With the r
 To run the notebooks in the repo, you only need two libraries: `transformers` and `tiktoken`:
 
 ```
-pip install transformers==4.35.0
-pip install tiktoken==0.5.1
+pip install transformers tiktoken
 ```
+
+Code has been tested with `transformers==4.35.0` and `tiktoken==0.5.1`.
 
 ## Recommended Prerequisites
 A basic understanding of language models and tokenization is a must: 
