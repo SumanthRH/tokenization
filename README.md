@@ -1,6 +1,6 @@
 
 
-# Tokenization
+# Everything About Tokenization
 
 Tokenization is an oft-neglected part of natural language processing. With the recent blow-up of interest in language models, it might be good to step back and really get into the guts of what tokenization is. This repo is meant to serve as a deep dive into different aspects of tokenization. It's been organized as bite-size chapters for easy navigation, with some code samples and (poorly designed) walkthrough notebooks. This is NOT meant to be a complete reference in itself, and is meant accompany other excellent resources like [HuggingFace's NLP course](https://huggingface.co/learn/nlp-course/chapter6/1). The following topics are covered: 
 
