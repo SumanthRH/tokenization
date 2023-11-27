@@ -6,7 +6,7 @@ Tokenization is an oft-neglected part of natural language processing. With the r
 
 1. [Intro](/1-intro/): A quick introduction on tokens and the different tokenization algorithms out there. 
 2. [BPE](/2-bpe/): A closer look at the Byte-Pair Encoding tokenization algorithm. We'll also go over a minimal implementation for training a BPE model.
-3. [🤗 Tokenizer](/3-hf-tokenizer/): The internals of HuggingFace tokenizers! We look at state (what's saved by a tokenizer), data structures (how does it store what it saves), and methods (what functionality do you get). We also implement a minimal 🤗 Tokenizer in Python for GPT2.
+3. [🤗 Tokenizer](/3-hf-tokenizer/): The internals of HuggingFace tokenizers! We look at state (what's saved by a tokenizer), data structures (how does it store what it saves), and methods (what functionality do you get). We also implement a minimal <200 line version of the 🤗 Tokenizer in Python for GPT2.
 4. [Challenges with Tokenization](/4-tokenization-is-hard/): Challenges with integer tokenization, tokenization for non-English languages and going multilingual, with a focus on the recent No Language Left Behind (NLLB) effort from Meta.
 5. [Puzzles](/5-puzzles/): Some simple puzzles to get you thinking about pre-tokenization, vocabulary size, etc.
 6. [PostProcessing and more](/6-postprocessing-and-more/): A look at special tokens and postprocessing, glitch tokens and why you might want to shrink your tokenizer.
