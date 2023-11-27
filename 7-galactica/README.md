@@ -143,7 +143,6 @@ A summary of all the special tokens used, [taken directly from Galactica's examp
 
 Now that's a lot of special tokens! The exact way in which you should preprocess your text which has different modalities so that they are tokenized appropriately, is an implementation detail we won't consider here. This kind of preprocessing is more or less the standard now when dealing with code, function calling, etc. The key difference of course, would be that with Galactica, you can so things like (1) `model.generate_with_steps` and (2) `model.generate` such that (1) provides a long answer with steps, possibly code and (2) provides a direct answer. Having a "shut up and give me the final answer" mode baked in, using special tokens would have been a nice ChatGPT feature.
 
-
 > _Task_ : Go to the HuggingFace repo for Galactica and have a look at the tokenizer config files to see where these special tokens go.
 
 > _Question_: How do you think you can make a simple change to the BPE algorithm in [chapter-2](../2-bpe/) so that integers always undergo character-level tokenization? Think about making a change in the step where we select the best pair of symbols.
@@ -154,6 +153,8 @@ not really compressing other modalities. (recall our discussion about low-resour
 
 ## Takeways on tokenizer design
 Something to think about while designing your tokenizer. From Galactica,the important lesson, in my opinion, which has become the norm really, is that you can separate out different data modalities with their own special tokens to switch between different modes of generation. Note that training a tokenizer from scratch is not always needed. For example, if you want to have some custom function calling behaviour with Llama 2 (as far as I know, no such training was performed for the base model), then you don't have to train the tokenizer from scratch. Your function call will be represented in code-like syntax, which Llama has been trained on, and what you would need to do is add special tokens, like `[START_FUNC]` and `[END_FUNC]`, resize token embeddings for the model, and then finetune on some function calling data you have. 
+
+Also, these special tokens don't _solve_ our issues with generating data according to our schema i.e we'll still have problems with schema validation. You can use a `[START_DNA]` token in your prompt to _better condition_ the model to generate a DNA-like sequence, but you might still end up with an _invalid_ DNA sequence. With more complicated schemas like JSONs with multiple fields/nesting, you can imagine the problems an LLM might have. Using special tokens helps, and should give better performance, but you'll need to do schema validation.
 
 # Model Training and Results
 This section will deviate slightly from tokenization, just to provide some context for other aspects in Galactica. 

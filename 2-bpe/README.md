@@ -56,3 +56,7 @@ Head over to [walkthrough.ipynb](walkthrough.ipynb) for a simple guide to traini
 
 # Next Chapter
 We'll take a close look at the Python implementation for a 🤗 tokenizer and implement a minimal version of GPT2's tokenizer ourselves!
+
+**References** 
+- Neural Machine Translation of Rare Words with Subword Units (BPE): https://arxiv.org/abs/1508.07909 
+- Lei Mao's BPE guide: https://leimao.github.io/blog/Byte-Pair-Encoding/ . The code here is also from the original paper. 
