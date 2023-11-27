@@ -12,6 +12,14 @@ Tokenization is an oft-neglected part of natural language processing. With the r
 6. [PostProcessing and more](/6-postprocessing-and-more/): A look at special tokens and postprocessing, glitch tokens and why you might want to shrink your tokenizer.
 7. [Galactica](/7-galactica/): Thinking about tokenizer design by diving into the Galactica paper.
 
+## Requirements
+To run the notebooks in the repo, you only need two libraries: `transformers` and `tiktoken`:
+
+```
+pip install transformers==4.35.0
+pip install tiktoken==0.5.1
+```
+
 ## Recommended Prerequisites
 A basic understanding of language models and tokenization is a must: 
 - [A Hackers' Guide to Language Models](https://youtu.be/jkrNMKz9pWU?si=y06_GUgoaG8_ASyd) by Prof. Jeremy Howard.
