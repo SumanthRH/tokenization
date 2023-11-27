@@ -1,7 +1,7 @@
 
 
 <!-- toc -->
-
+# Table of Contents
 - [Diving into the HuggingFace tokenizer](#diving-into-the-huggingface-tokenizer)
   * [What makes up a HuggingFace tokenizer?](#what-makes-up-a-huggingface-tokenizer)
     + [BPE Tokenizer](#bpe-tokenizer)
