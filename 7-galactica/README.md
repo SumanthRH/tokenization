@@ -1,5 +1,21 @@
 # Table of Contents
+
 <!-- toc -->
+
+- [Tokenizer Design: Diving Deep Into Galactica](#tokenizer-design-diving-deep-into-galactica)
+- [The data](#the-data)
+  * [Prompt pre-training](#prompt-pre-training)
+- [Tokens and input format in Galactica](#tokens-and-input-format-in-galactica)
+  * [Generating References](#generating-references)
+  * [Working memory](#working-memory)
+  * [So Many Special Tokens](#so-many-special-tokens)
+  * [Tokenizer training](#tokenizer-training)
+  * [Takeways on tokenizer design](#takeways-on-tokenizer-design)
+- [Model Training and Results](#model-training-and-results)
+  * [Results](#results)
+- [Further reading](#further-reading)
+
+<!-- tocstop -->
 
 # Tokenizer Design: Diving Deep Into Galactica
 This section is on tokenizer *design*: if you're looking to train a tokenizer from scratch for your use-case, *how* might one go about this?  Well, first of all, let's take a step back and ask, *when* should you train a new tokenizer? The answer is straightforward (and perhaps underwhelming): when your dataset is different from the training corpus of the pretrained model, and you wish to *pretrain* a new model. It's hard to imagine companies pretraining a Llama-like model with trillions of tokens. However, the trend is that compute is going to become cheaper, the GPU hardware market will become more leveled, the amount of data and really use-case specific data each company has will only increase. Thus, one *can* make the case that the current budget for pretraining would be within hand for a bunch of companies in the near future. With the research community also squeezing out better and better performance with smaller models and datasets, some companies pretraining small models on private data(especially multimodal data) is not a crazy future. Anyways, back to tokenizer design: This section will dive deep into the Galactica model, breaking down the use case, dataset, model, etc (this is important context) with some focus on tokens.
@@ -152,4 +168,4 @@ Some interesting points from the results, focusing on input format:
 There are a number of great improvements over multiple tasks like reasoning, question answering, and the core idea, which is performance on scientific modalities, which you can find in the paper.
 
 # Further reading
-Galactica: A Large Language Model for Science: https://arxiv.org/abs/2211.09085 
+Galactica: A Large Language Model for Science: https://arxiv.org/abs/2211.09085

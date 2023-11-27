@@ -1,6 +1,7 @@
-
 # Table of Contents
+
 <!-- toc -->
+
 - [Number Tokenization](#number-tokenization)
 - [Metrics](#metrics)
 - [Tokenization for non-English languages](#tokenization-for-non-english-languages)
@@ -10,6 +11,7 @@
       - [How does temperature sampling help again?](#how-does-temperature-sampling-help-again)
     + [Tokenization affects evaluation](#tokenization-affects-evaluation)
 - [Low Resource => More Costly](#low-resource--more-costly)
+- [Next Chapter](#next-chapter)
 
 <!-- tocstop -->
 
@@ -88,3 +90,5 @@ While tokenization might not be the sole reason, it's important to note how "poo
 # Low Resource => More Costly
 One artifact of having an imbalanced mixture of different languages in your training corpus (for the tokenizer) is that your costs for text completions in low-resource languages can shoot up - simply because the text sequences get encoded with more tokens (i.e there is lesser _compression_ since a _smaller_ part of the vocabulary is _allocated_ for that language). For example, one user found that API calls in Hindi are 8 times more expensive than those in English: https://www.reddit.com/r/OpenAI/comments/124v2oi/hindi_8_times_more_expensive_than_english_the/
 
+# Next Chapter
+We'll look at two simple puzzles to get you thinking about pre-tokenization and the impact of vocabulary size on tokenizer _fertility_ (number of tokens per word).

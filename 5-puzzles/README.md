@@ -1,7 +1,19 @@
+
+
+<!-- toc -->
+
+- [Applying what we've learned](#applying-what-weve-learned)
+- [Tokenizer Puzzle 1: White Spaces](#tokenizer-puzzle-1-white-spaces)
+- [Tokenizer Puzzle 2: Vocabulary Size](#tokenizer-puzzle-2-vocabulary-size)
+  * [Testing on code](#testing-on-code)
+- [Next Chapter](#next-chapter)
+
+<!-- tocstop -->
+
 # Applying what we've learned
 Let's apply what we've learned through two simple puzzles!
 
-## Tokenizer Puzzle 1: White spaces matter
+# Tokenizer Puzzle 1: White Spaces
 Here's a simple puzzle to test your knowledge of tokenization. Consider the case where you have a sequence of English words all stuck together i.e whitespace between them has been removed. Here's a sample:
 
 ```
@@ -20,6 +32,13 @@ Let's use the BERT tokenizer, because you can clearly see the difference with an
 ['My', '##fi', '##rst', '##tok', '##eni', '##zer', '##pu', '##zzle']
 ```
 
+To try this out yourself, you can simply run:
+```
+from transformers import AutoTokenizer
+tok = AutoTokenizer.from_pretrained("bert-base-cased")
+tok.batch_decode(tok.encode("Myfirsttokenizerpuzzle", add_special_tokens=False)) # omit postprocessing
+```
+
 Here "##" denotes that this is infact a continuation from the previous token. If you had spaces ("My first tokenizer puzzle"), you'll see
 
 ```
@@ -30,7 +49,7 @@ You can clearly see the differences with and without whitespaces. In general, th
 
 ![Alt text](tok_pipeline.png)
 
-The image above is from the [🤗 NLP course](https://huggingface.co/learn/nlp-course/chapter6/4), showing the full pipeline for the uncased BERT tokenizer (which is why normalization converts everything to lower case). With our example, let's see what happens at each stage:
+The image above is from the [🤗 NLP course](https://huggingface.co/learn/nlp-course/chapter6/4), showing the full pipeline for the uncased BERT tokenizer (which is why normalization converts everything to lower case). With our example, let's see what happens at each stage with the _cased_ BERT tokenizer:
 
 ```
         Myfirsttokenizerpuzzle
@@ -47,20 +66,20 @@ The image above is from the [🤗 NLP course](https://huggingface.co/learn/nlp-c
                 ↓ ········································(Normalization)
         My first tokenizer puzzle
                 ↓ ········································ (Pre-tokenization)
-[('My', (0, 2)), ('Ġfirst', (2, 8)), ('Ġtokenizer', (8, 18)), ('Ġpuzzle', (18, 25))]
+[('My', (0, 2)), ('first', (3, 8)), ('tokenizer', (9, 18)), ('puzzle', (19, 25))]
                 ↓ ········································ (Model/Tokenization)
 ['My', 'first', 'token', '##izer', 'puzzle']
 ```
 
-I've omitted post-processing here. You can see that the normalization step in this case did not change anything (I believe for BERT-cased, even extra whitespaces, etc are preserved, but, for example, tabs are converted to whitespaces, so it's not exactly doing nothing). The pre-tokenization step, the words are split based on whitespace, but the information is preserved in the tokens by adding a unicode symbol Ġ. In this case, the output also contains _offset mappings_ : these are the the offsets from the start of the text for the token boundaries. Looking at our example without whitespaces you can see that there's really nothing happening in the normalization and pre-tokenization step (which will be true for most modern tokenizers like Llama and GPT4). You can clearly see the difference in the inputs to the WordPiece model. After pre-tokenization (post-pre-tokenization?), the WordPiece will find the best (rather longest) match for the list of words. Note that in general, with sub-word tokenizers, tokens are usually sub-words , but it could well be a _multi-word token_. While some Chinese language models [like Baichuan](https://x.com/suchenzang/status/1697862650053660721?s=20) have this, I am yet to see a multi-word token in models like GPT-4 and Llama. I believe with English text, pre-tokenization generally splits on whitespace, and thus the inputs for the tokenization model are only single words which might get split further. Anyways, back to our tokenization pipeline: now that we've gone through all the steps for both the two cases, let's come back to the original question:
+I've omitted post-processing here. You can see that the normalization step in this case did not change anything (I believe for BERT-cased, even extra whitespaces, etc are preserved, but, for example, tabs are converted to whitespaces, so it's not exactly doing nothing). The pre-tokenization step, the words are split based on whitespace, but with BERT, whitespace information is _implicit_ with the use of `##`. Recall that with GPT2,the whitespace information is preserved in the tokens by adding a unicode symbol Ġ. Also, in this case, the output also contains _offset mappings_ : these are the the offsets from the start of the text for the token boundaries. Looking at our example without whitespaces you can see that there's really nothing happening in the normalization and pre-tokenization step (which will be true for most modern tokenizers like Llama and GPT4). You can clearly see the difference in the inputs to the WordPiece model (i.e the third step). After pre-tokenization (post-pre-tokenization?), the WordPiece model will find the best (rather longest) match for the list of words. Note that in general, with sub-word tokenizers, tokens are usually sub-words , but it could well be a _multi-word token_. While some language models [like Baichuan](https://x.com/suchenzang/status/1697862650053660721?s=20) have this for Chinese text, I am yet to see a multi-word token for English in models like GPT-4 and Llama. I believe with English text, pre-tokenization generally splits on whitespace, and thus the inputs for the tokenization model are only single words which might get split further. Anyways, back to our tokenization pipeline: now that we've gone through all the steps for both the two cases, let's come back to the original question:
 
 > Can you recover the original words without whitespace?
 
-You can see that that the tokenizer gives 8 vs 5 tokens for the two cases (without spaces and with spaces, resp.). Clearly, finding a mapping between these two tokenized sequences is non-trivial in general. The one thing that you can say is that a good _sequence encoder_ model should place both these sequences very close together in the embedding space. Do you see where I'm going with this? One answer to the problem, of course, would be to build a dictionary with as many English words as possible (we need to deal with all possibilities with special characters, punctuations, etc) and then have some optimized dynamic programming strategy (because this is ill-posed, with multiple solutions in general, and many answers/splits won't be grammatically sound). But the best answer for the problem is to feed the sequence into a language model! A powerful-enough language model will be pretty much flawless in recovering the original words. (except, maybe in cases with [glitch tokens](../4-tokenization-is-hard/README.md#glitch-tokens))
+You can see that that the tokenizer gives 8 vs 5 tokens for the two cases (without spaces and with spaces, resp.). Clearly, finding a mapping between these two tokenized sequences is non-trivial in general. The one thing that you can say is that a good _sequence encoder_ model should place both these sequences very close together in the embedding space. Do you see where I'm going with this? One answer to the problem, of course, would be to build a dictionary with as many English words as possible (we need to deal with all possibilities with special characters, punctuations, etc) and then have some optimized dynamic programming strategy (because this is ill-posed, with multiple solutions in general, and many answers/splits won't be grammatically sound). But the best answer for the problem is to feed the sequence into a language model! A powerful-enough language model will be pretty much flawless in recovering the original words. (except, maybe in cases with [glitch tokens](../6-postprocessing-and-more/glitch_tok.md))
 
 
 
-## Tokenizer Puzzle 2: The Effect of Vocabulary Size
+# Tokenizer Puzzle 2: Vocabulary Size
 
 Inference and Training speed/throughput are often reported in tokens/ sec. However, the number of tokens depends on the models' vocabulary size - and this can differ widely - GPT 2 has a 50k vocab size, Llama 2 has a 32k vocab size, and GPT4 has a whopping 100k vocab size. This means that comparisons based solely on token counts might not make sense. You might ask: How _exactly_ does this affect sequence length: Are there heuristics to predict sequence lengths based on vocab sizes or other data? Well, that's a very hard question. Firstly, a lot of current tokenizers are BPE-based, so let's say we're only looking at BPE tokenizers. Now, vocabulary sizes are _chosen_ while training tokenizers. But vocab size is not the only component here. One training corpus might include a lot of code, and thus the vocabulary would have a bunch of code-specific tokens, while another might include very little, and you might end up with only character-level tokens for code. With such variability, it's not easy to just look at vocabulary size and say that for this dataset, I will get x times more tokens with LLama 2 vs GPT4. Indeed, you can see the same from [Thomas Wolf's tokenizer puzzle](https://twitter.com/Thom_Wolf/status/1700812382392516936):
 
@@ -139,3 +158,6 @@ Aha! We see clear differences across tokenizers now. GPT2 gives a whopping 2x th
 GPT4 (100K) > Falcon (65K) > GPT2 (50K) > Llama (32K)
 
 GPT2 has a _larger_ vocabulary size than LLama, but the number of tokens is in fact _1.3x more_. Why? Well, because it's not general vocabulary size that matters, of course! It's the vocabulary dedicated for the relevant characters/tokens in your test corpus that matters! If you notice, Llama actually gives you more tokens on English text (the previous experiment) than GPT2, so a clear tradeoff is visible. BPE is after all, a compression algorithm, and the training corpus for the Llama tokenizer had a good representation of code-related data, and thus more tokens were dedicated to code to _effectively compress_ that data. A simple demonstration: The encoding for 4 spaces (`    ` - pretty common in code) is 1 single token with Llama's tokenizer, but 4 separate tokens with GPT2. 
+
+# Next Chapter
+We'll be looking into the postprocessing step of tokenization (a special section on some special tokens), along with a look at a strange behaviour with "glitch tokens", and why you might want to make a tiny tokenizer.

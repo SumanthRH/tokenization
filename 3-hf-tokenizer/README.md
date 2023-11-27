@@ -1,4 +1,19 @@
+
+
 <!-- toc -->
+
+- [Diving into the HuggingFace tokenizer](#diving-into-the-huggingface-tokenizer)
+  * [What makes up a HuggingFace tokenizer?](#what-makes-up-a-huggingface-tokenizer)
+    + [BPE Tokenizer](#bpe-tokenizer)
+    + [WordPiece tokenizer](#wordpiece-tokenizer)
+  * [Data Structures and Methods](#data-structures-and-methods)
+    + [`__call__`](#__call__)
+    + [`decode`](#decode)
+- [A minimal implementation](#a-minimal-implementation)
+- [Step-by-step walkthrough](#step-by-step-walkthrough)
+- [Next Chapter](#next-chapter)
+
+<!-- tocstop -->
 
 # Diving into the HuggingFace tokenizer
 ## What makes up a HuggingFace tokenizer?

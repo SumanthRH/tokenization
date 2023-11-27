@@ -1,5 +1,21 @@
 # Table of Contents
+
 <!-- toc -->
+
+- [The PostProcessor: Be careful with special tokens](#the-postprocessor-be-careful-with-special-tokens)
+  * [What is your task?](#what-is-your-task)
+  * [Causal language modelling](#causal-language-modelling)
+  * [Instruction-tuning](#instruction-tuning)
+    + [Is this code snippet correct?](#is-this-code-snippet-correct)
+  * [What's so special about the EOS token anyway?](#whats-so-special-about-the-eos-token-anyway)
+  * [More on special tokens](#more-on-special-tokens)
+- [Modifying the tokenizer](#modifying-the-tokenizer)
+- [Glitch Tokens](#glitch-tokens)
+- [Tiny Tokenizers](#tiny-tokenizers)
+- [Next Chapter](#next-chapter)
+
+<!-- tocstop -->
+
 # The PostProcessor: Be careful with special tokens
 One aspect we didn't get into until now was the postprocessor: typically, certain special tokens are added at the beginning or end (or both) of your sequence. For example, if you encode "Hello there!" with BERT, you get:
 
