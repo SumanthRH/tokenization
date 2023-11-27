@@ -79,11 +79,13 @@ mimicking an internal working memory context.
 
 One example for the processed text with a protein sequence, from the paper:
 
-![Text](image.png)
+![Text](image.png) 
+
 *Example for an annotated protein sequence with accompanying text*
 
 
-![Alt text](image-1.png)
+![Alt text](image-1.png) 
+
 *Example for an annotated block of text from scientific literature with citations*
 
 
