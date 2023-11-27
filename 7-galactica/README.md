@@ -139,18 +139,18 @@ A summary of all the special tokens used, [taken directly from Galactica's examp
 > `[START_SUP]`, `[END_SUP]`, `[START_SUB]` and `[END_SUB]` - markers used to protect superscript and subscript digits from NFKC normaliziation. Our tokenizer uses the standard NFKC rules, which means that `x²⁵` would be tokenized in the same way as `x25`. To prevent this, we encode `x²⁵` as `x[START_SUP]25[END_SUP]`.
 >
 > `[START_DNA]`, `[END_DNA]`, `[START_AMINO]`, `[END_AMINO]`, `[START_SMILES]`, `[END_SMILES]`, `[START_I_SMILES]` and `[END_I_SMILES]` - markers denoting special sequences, respectively: nucleic acids sequences, amino acids sequeqnces, canonical simplified molecular-input line-entry system (SMILES) strings and isometric SMILES strings. Besides marking a sequence of a given type, these tokens force a special tokenization mode in which each character is represented as a single token. F.e., `GATTACA` is tokenized as `G|ATT|ACA`, while `[START_DNA]GATTACA[END_DNA]` is tokenized as `[START_DNA]|G|A|T|T|A|C|A|[END_DNA]`. Note that for this to work you need to transform your prompt with `galai.utils.escape_custom_split_sequence`. All standard text generation functions of `galai.model.Model` do this automatically.
- 
+
+
+Now that's a lot of special tokens! The exact way in which you should preprocess your text which has different modalities so that they are tokenized appropriately, is an implementation detail we won't consider here. This kind of preprocessing is more or less the standard now when dealing with code, function calling, etc. The key difference of course, would be that with Galactica, you can so things like (1) `model.generate_with_steps` and (2) `model.generate` such that (1) provides a long answer with steps, possibly code and (2) provides a direct answer. Having a "shut up and give me the final answer" mode baked in, using special tokens would have been a nice ChatGPT feature.
+
 
 > _Task_ : Go to the HuggingFace repo for Galactica and have a look at the tokenizer config files to see where these special tokens go.
 
-Now that's a lot of special tokens! The exact way in which you should preprocess your text which has different modalities so that they are tokenized appropriately, is an implementation detail we won't consider here. This kind of preprocessing is more or less the standard now when dealing with code, function calling, etc. The key difference of course, would be that with Galactica, you can things like (1) `model.generate_with_steps` and (2) `model.generate` that provide (1) a long answer with steps, possibly code (2) a direct answer - two distinct modes.
-
 > _Question_: How do you think you can make a simple change to the BPE algorithm in [chapter-2](../2-bpe/) so that integers always undergo character-level tokenization? Think about making a change in the step where we select the best pair of symbols.
 
-
 ## Tokenizer training
-The Tokenizer was trained on 2% of the training data, randomly selected. They trained a BPE tokenizer with a vocabulary of size 50K. Note that for all the other special modalities used, the authors have chosen a character-level tokenization (numbers, chemical structure, protein sequences, etc). The fundamental imbalance wrt English text vs non-English modalities (recall our discussion about low-resource languages from [chapter-4](../4-tokenization-is-hard/)) doesn't matter much in terms of the compression you get, because you're 
-not really compressing other modalities.
+The Tokenizer was trained on 2% of the training data, randomly selected. They trained a BPE tokenizer with a vocabulary of size 50K. Note that for all the other special modalities used, the authors have chosen a character-level tokenization (numbers, chemical structure, protein sequences, etc). The fundamental imbalance wrt English text/code vs scientific modalities doesn't matter much in terms of the compression you get, because you're 
+not really compressing other modalities. (recall our discussion about low-resource languages from [chapter-4](../4-tokenization-is-hard/))
 
 ## Takeways on tokenizer design
 Something to think about while designing your tokenizer. From Galactica,the important lesson, in my opinion, which has become the norm really, is that you can separate out different data modalities with their own special tokens to switch between different modes of generation. Note that training a tokenizer from scratch is not always needed. For example, if you want to have some custom function calling behaviour with Llama 2 (as far as I know, no such training was performed for the base model), then you don't have to train the tokenizer from scratch. Your function call will be represented in code-like syntax, which Llama has been trained on, and what you would need to do is add special tokens, like `[START_FUNC]` and `[END_FUNC]`, resize token embeddings for the model, and then finetune on some function calling data you have. 
