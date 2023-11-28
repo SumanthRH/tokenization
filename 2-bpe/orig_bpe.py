@@ -44,6 +44,7 @@ def merge_word_splits(pair, v_in: dict):
 
 word_to_freq = get_initial_words('ex_corpus.txt')
 vocab = get_tokens(word_to_freq)
+merges = []
 print("Initial vocab: ", vocab)
 print("##################")
 num_merges = 10
@@ -52,6 +53,7 @@ for i in range(num_merges):
     best_pair = max(pairs, key=pairs.get)
     word_to_freq = merge_word_splits(best_pair, word_to_freq)
     new_token = ''.join(best_pair)
+    merges.append(best_pair)
     vocab[new_token] = len(vocab)
     print(f"Iteration {i+1}")
     print("Best pair: ", best_pair)
@@ -60,3 +62,4 @@ for i in range(num_merges):
     print("##################")
 
 print("Final vocab: ", vocab)
+print("Final list of merges: ", merges)
