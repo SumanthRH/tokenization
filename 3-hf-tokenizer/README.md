@@ -9,6 +9,7 @@
   * [Data Structures and Methods](#data-structures-and-methods)
     + [`__call__`](#__call__)
     + [`decode`](#decode)
+    + [add_tokens](#add_tokens)
 - [A minimal implementation](#a-minimal-implementation)
 - [Step-by-step walkthrough](#step-by-step-walkthrough)
 - [Next Chapter](#next-chapter)
@@ -71,6 +72,9 @@ When you run `tok.decode(token_ids)`, there are three operations:
 1. Convert ids to tokens using the `id_to_token` mapping from `tok.bpe`. 
 2. Join all the tokens
 3. Replace unicode symbols with normal characters
+
+### `add_tokens`
+Another important feature is that you can add new tokens to your tokenizer. This needs to be handled carefully, as these tokens are not learned bottom up during training. We'll look at how exactly this works with our minimal implementation below.
 
 # A minimal implementation
 This folder contains two `.py` files:
