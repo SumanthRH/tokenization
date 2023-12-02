@@ -54,7 +54,7 @@ Now, as mentioned, we'd ideally like to keep whitespace information, but that is
 # Step into the walkthrough
 Head over to [walkthrough.ipynb](walkthrough.ipynb) for a simple guide to training a BPE model. This is a notebook version of the code in `orig_bpe.py`, and should be easier to digest.
 
-# Next Chapter
+# [Next Chapter](/3-hf-tokenizer/)
 We'll take a close look at the Python implementation for a 🤗 tokenizer and implement a minimal version of GPT2's tokenizer ourselves!
 
 **References** 

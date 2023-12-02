@@ -86,6 +86,6 @@ Head over to [walkthrough.ipynb](/3-hf-tokenizer/walkthrough.ipynb) for details 
 - Implementing the merging algorithm for `BPE`
 - Implementing the different methods for encoding, decoding, added tokens etc. in `MySlowTokenizer` to match `GPT2Tokenizer`.
 
-# Next Chapter
+# [Next Chapter](/4-tokenization-is-hard/)
 We'll be going over the challenges with tokenizing different types of data - numbers, other languages, etc.
 

@@ -146,5 +146,5 @@ One more point is that the shrinking of the tokenizer is mainly for the vocabula
 **Further reading**
 [Faster debug and development with tiny models, tokenizers and datasets](https://github.com/stas00/ml-engineering/blob/33561a45d122e7fdb3f3bc42e21b0e4aa3815702/transformers/make-tiny-models.md), Stas Bekman's engineering blog.
 
-# Next Chapter
+# [Next Chapter](/7-galactica/)
 We'll now dive into the Galactica paper to understand how you can design a tokenizer.

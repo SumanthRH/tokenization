@@ -159,5 +159,5 @@ GPT4 (100K) > Falcon (65K) > GPT2 (50K) > Llama (32K)
 
 GPT2 has a _larger_ vocabulary size than LLama, but the number of tokens is in fact _1.3x more_. Why? Well, because it's not general vocabulary size that matters, of course! It's the vocabulary dedicated for the relevant characters/tokens in your test corpus that matters! If you notice, Llama actually gives you more tokens on English text (the previous experiment) than GPT2, so a clear tradeoff is visible. BPE is after all, a compression algorithm, and the training corpus for the Llama tokenizer had a good representation of code-related data, and thus more tokens were dedicated to code to _effectively compress_ that data. A simple demonstration: The encoding for 4 spaces (`    ` - pretty common in code) is 1 single token with Llama's tokenizer, but 4 separate tokens with GPT2. 
 
-# Next Chapter
+# [Next Chapter](/6-postprocessing-and-more/)
 We'll be looking into the postprocessing step of tokenization (a special section on some special tokens), along with a look at a strange behaviour with "glitch tokens", and why you might want to make a tiny tokenizer.

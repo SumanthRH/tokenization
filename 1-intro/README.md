@@ -84,7 +84,7 @@ An excellent visualization for the BERT tokenizer, from HuggingFace's NLP course
 
 ![Alt text](tok_pipeline.png)
 
-# Next Chapter
+# [Next Chapter](/2-bpe/)
 In the next chapter, we'll dive into the BPE algorithm, and train a simple BPE model from scratch.
 
 
