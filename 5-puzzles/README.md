@@ -1,5 +1,5 @@
-
 # Table of Contents
+
 <!-- toc -->
 
 - [Applying what we've learned](#applying-what-weve-learned)
@@ -11,7 +11,7 @@
 <!-- tocstop -->
 
 # Applying what we've learned
-Let's apply what we've learned through two simple puzzles!
+Let's apply what we've learned through two simple puzzles! We'll look at two puzzles to get you thinking about pre-tokenization, vocabulary size, etc.
 
 # Tokenizer Puzzle 1: White Spaces
 Here's a simple puzzle to test your knowledge of tokenization. Consider the case where you have a sequence of English words all stuck together i.e whitespace between them has been removed. Here's a sample:

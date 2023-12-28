@@ -2,6 +2,7 @@
 
 <!-- toc -->
 
+- [Agenda](#agenda)
 - [The PostProcessor: Be careful with special tokens](#the-postprocessor-be-careful-with-special-tokens)
   * [What is your task?](#what-is-your-task)
   * [Causal language modelling](#causal-language-modelling)
@@ -15,6 +16,9 @@
 - [Next Chapter](#next-chapter)
 
 <!-- tocstop -->
+
+# Agenda
+Some miscallaneous topics that we haven't covered yet! We'll finally look at postprocessing step in tokenization and the gotchas with special tokens. We'll also look at problematic "glitch tokens" studying the behaviour of GPT-3.5, and if you're a developer, why you might want to shrink your tokenizer for fast iteration cycles.
 
 # The PostProcessor: Be careful with special tokens
 One aspect we didn't get into until now was the postprocessor: typically, certain special tokens are added at the beginning or end (or both) of your sequence. For example, if you encode "Hello there!" with BERT, you get:

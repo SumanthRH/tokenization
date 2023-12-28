@@ -1,7 +1,8 @@
 
 
 <!-- toc -->
-# Table of Contents
+
+- [Agenda](#agenda)
 - [Diving into the HuggingFace tokenizer](#diving-into-the-huggingface-tokenizer)
   * [What makes up a HuggingFace tokenizer?](#what-makes-up-a-huggingface-tokenizer)
     + [BPE Tokenizer](#bpe-tokenizer)
@@ -9,12 +10,15 @@
   * [Data Structures and Methods](#data-structures-and-methods)
     + [`__call__`](#__call__)
     + [`decode`](#decode)
-    + [add_tokens](#add_tokens)
+    + [`add_tokens`](#add_tokens)
 - [A minimal implementation](#a-minimal-implementation)
 - [Step-by-step walkthrough](#step-by-step-walkthrough)
 - [Next Chapter](#next-chapter)
 
 <!-- tocstop -->
+
+# Agenda
+The internals of HuggingFace tokenizers! We look at state (what's saved by a tokenizer), data structures (how does it store what it saves), and methods (what functionality do you get). We also implement a minimal <200 line version of the 🤗 Tokenizer in Python for GPT2.
 
 # Diving into the HuggingFace tokenizer
 ## What makes up a HuggingFace tokenizer?

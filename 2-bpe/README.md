@@ -1,7 +1,8 @@
-
 # Table of Contents
+
 <!-- toc -->
 
+- [Agenda](#agenda)
 - [Byte-Pair Encoding](#byte-pair-encoding)
   * [Why is subword tokenization so popular?](#why-is-subword-tokenization-so-popular)
   * [Training](#training)
@@ -11,6 +12,9 @@
 - [Next Chapter](#next-chapter)
 
 <!-- tocstop -->
+
+# Agenda
+In this chapter, we take a closer look at the Byte-Pair Encoding tokenization algorithm. We'll also go over a minimal implementation for training a BPE model. 
 
 # Byte-Pair Encoding
 Byte-Pair Encoding (BPE) is perhaps the most popular tokenization algorithm right now, used by GPT, OPT, BLOOM, Llama, Falcon, etc. Byte-pair encoding/ digram coding is a _compression algorithm_ that comes from information theory, and was first proposed in 1994 (Web archive). The original BPE algorithm  iteratively replaces the most frequent pair of bytes in a sequence with a single, unused byte. (In the sense that a sequence which only contains bytes 00000000, 00000001 and 00000010 might get compressed by using bytes like 00000011). [Sennrich et al.](https://arxiv.org/abs/1508.07909) proposed to use BPE for tokenization, where you apply the algorithm to merge characters/ character sequences. Their work is now considered to be a breakthrough moment for subword tokenization, quoting Mielke _et al_. 
@@ -59,4 +63,4 @@ We'll take a close look at the Python implementation for a 🤗 tokenizer and im
 
 **References** 
 - Neural Machine Translation of Rare Words with Subword Units (BPE): https://arxiv.org/abs/1508.07909 
-- Lei Mao's BPE guide: https://leimao.github.io/blog/Byte-Pair-Encoding/ . The code here is also from the original paper. 
+- Lei Mao's BPE guide: https://leimao.github.io/blog/Byte-Pair-Encoding/ . The code here is also from the original paper.
