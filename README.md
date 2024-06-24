@@ -11,6 +11,7 @@ Tokenization is an oft-neglected part of natural language processing. With the r
 5. [Puzzles](/5-puzzles/): Some simple puzzles to get you thinking about pre-tokenization, vocabulary size, etc.
 6. [PostProcessing and more](/6-postprocessing-and-more/): A look at special tokens and postprocessing, glitch tokens and why you might want to shrink your tokenizer.
 7. [Galactica](/7-galactica/): Thinking about tokenizer design by diving into the Galactica paper.
+8. [Chat templates](/8-chat-templates/): Some tokenization tips and tricks while dealing with chat-templating for chat models.
 
 ## Requirements
 To run the notebooks in the repo, you only need two libraries: `transformers` and `tiktoken`:
